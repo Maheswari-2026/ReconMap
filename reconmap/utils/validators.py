@@ -15,7 +15,6 @@ def normalize_domain(domain: str) -> str:
 
     if domain.startswith("https://"):
         domain = domain[8:]
-
     elif domain.startswith("http://"):
         domain = domain[7:]
 
