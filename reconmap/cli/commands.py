@@ -1,6 +1,10 @@
 import argparse
 
-from reconmap.collectors.dns import get_a_records, get_aaaa_records
+from reconmap.collectors.dns import (
+    get_a_records,
+    get_aaaa_records,
+    get_ns_records,
+)
 from reconmap.utils.validators import normalize_domain, validate_domain
 
 
@@ -52,5 +56,17 @@ def main():
     if aaaa_records:
         for address in aaaa_records:
             print(f"  - {address}")
+    else:
+        print("  - None found")
+
+    # Name servers
+    ns_records = get_ns_records(domain)
+
+    print()
+    print(f"NS Records Found: {len(ns_records)}")
+
+    if ns_records:
+        for server in ns_records:
+            print(f"  - {server}")
     else:
         print("  - None found")
