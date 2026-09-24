@@ -4,6 +4,7 @@ from reconmap.collectors.dns import (
     get_a_records,
     get_aaaa_records,
     get_ns_records,
+    get_mx_records,
 )
 from reconmap.utils.validators import normalize_domain, validate_domain
 
@@ -70,3 +71,17 @@ def main():
             print(f"  - {server}")
     else:
         print("  - None found")
+    #mx servers
+    mx_records = get_mx_records(domain)
+
+    print()
+    print(f"MX Records Found: {len(mx_records)}")
+
+    if mx_records:
+        for record in mx_records:
+            print(
+                f"  - Priority: {record['priority']} "
+                f"Server: {record['server']}"
+            )
+    else:
+        print("  - None found")    

@@ -53,3 +53,26 @@ def get_ns_records(domain: str) -> list[str]:
 
     except dns.resolver.Timeout:
         return []
+    
+def get_mx_records(domain: str) -> list[dict]:
+    """Return mail exchange servers and their priorities for a domain."""
+
+    try:
+        answers = dns.resolver.resolve(domain, "MX")
+
+        return [
+            {
+                "priority": answer.preference,
+                "server": answer.exchange.to_text().rstrip("."),
+            }
+            for answer in answers
+        ]
+
+    except dns.resolver.NoAnswer:
+        return []
+
+    except dns.resolver.NXDOMAIN:
+        return []
+
+    except dns.resolver.Timeout:
+        return []    

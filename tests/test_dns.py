@@ -2,6 +2,7 @@ from reconmap.collectors.dns import (
     get_a_records,
     get_aaaa_records,
     get_ns_records,
+    get_mx_records,
 )
 
 
@@ -31,3 +32,16 @@ def test_get_ns_records():
 
     for record in records:
         assert isinstance(record, str)
+
+
+def test_get_mx_records():
+    records = get_mx_records("example.com")
+
+    assert isinstance(records, list)
+
+    for record in records:
+        assert isinstance(record, dict)
+        assert "priority" in record
+        assert "server" in record
+        assert isinstance(record["priority"], int)
+        assert isinstance(record["server"], str)
