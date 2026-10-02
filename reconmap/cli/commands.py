@@ -1,12 +1,10 @@
 import argparse
 
-from reconmap.collectors.dns import (
-    get_a_records,
-    get_aaaa_records,
-    get_ns_records,
-    get_mx_records,
-)
+from reconmap.core.pipeline import run_recon
 from reconmap.utils.validators import normalize_domain, validate_domain
+from reconmap.analyzers.attack_surface import analyze_assets
+from reconmap.output.json_report import write_json_report
+from reconmap.output.csv_report import write_csv_report
 
 
 def main():
@@ -16,7 +14,7 @@ def main():
 
     parser.add_argument(
         "domain",
-        help="Target domain"
+        help="Target domain",
     )
 
     args = parser.parse_args()
@@ -32,56 +30,78 @@ def main():
 
     print()
     print("=" * 50)
-    print("DNS RECONNAISSANCE")
+    print("RECONNAISSANCE")
     print("=" * 50)
 
-    print(f"Domain: {domain}")
-
-    # IPv4
-    a_records = get_a_records(domain)
-
-    print(f"A Records Found: {len(a_records)}")
-
-    if a_records:
-        for address in a_records:
-            print(f"  - {address}")
-    else:
-        print("  - None found")
-
-    # IPv6
-    aaaa_records = get_aaaa_records(domain)
-
+    assets = run_recon(domain)
+    
+    findings = analyze_assets(assets)
+    
+    write_json_report(
+    target=domain,
+    assets=assets,
+    findings=findings,
+    output_path=f"results/{domain}-report.json",
+    )
+    
+    write_csv_report(
+    assets=assets,
+    output_path=f"results/{domain}-report.csv",
+    )
+    
     print()
-    print(f"AAAA Records Found: {len(aaaa_records)}")
+    print(f"Assets Discovered: {len(assets)}")
 
-    if aaaa_records:
-        for address in aaaa_records:
+    for asset in assets:
+        print()
+        print("-" * 50)
+        print(f"Hostname: {asset.hostname}")
+
+        print(f"IPv4: {len(asset.ipv4)}")
+        for address in asset.ipv4:
             print(f"  - {address}")
-    else:
-        print("  - None found")
 
-    # Name servers
-    ns_records = get_ns_records(domain)
+        print(f"IPv6: {len(asset.ipv6)}")
+        for address in asset.ipv6:
+            print(f"  - {address}")
 
-    print()
-    print(f"NS Records Found: {len(ns_records)}")
-
-    if ns_records:
-        for server in ns_records:
+        print(f"Name Servers: {len(asset.nameservers)}")
+        for server in asset.nameservers:
             print(f"  - {server}")
-    else:
-        print("  - None found")
-    #mx servers
-    mx_records = get_mx_records(domain)
+
+        print(f"Mail Servers: {len(asset.mail_servers)}")
+        for server in asset.mail_servers:
+            print(
+                f"  - Priority: {server['priority']} "
+                f"Server: {server['server']}"
+            )
+
+        print(f"TXT Records: {len(asset.txt_records)}")
+        for record in asset.txt_records:
+            print(f"  - {record}")
+
+        print(f"CNAME Records: {len(asset.cname_records)}")
+        for record in asset.cname_records:
+            print(f"  - {record}")
+
+        print(
+            f"Certificate Sources: "
+            f"{len(asset.certificate_sources)}"
+        )
+
+        for source in asset.certificate_sources:
+            print(f"  - {source}")
+
+        print(f"HTTP Services: {len(asset.http_services)}")
+
+        for service in asset.http_services:
+            print(
+                f"  - {service.scheme.upper()} "
+                f"{service.status_code} "
+                f"{service.final_url}"
+            )
 
     print()
-    print(f"MX Records Found: {len(mx_records)}")
-
-    if mx_records:
-        for record in mx_records:
-            print(
-                f"  - Priority: {record['priority']} "
-                f"Server: {record['server']}"
-            )
-    else:
-        print("  - None found")    
+    print("=" * 50)
+    print("RECONNAISSANCE COMPLETE")
+    print("=" * 50)
