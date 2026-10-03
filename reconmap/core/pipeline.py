@@ -9,6 +9,7 @@ from reconmap.collectors.dns import (
 )
 from reconmap.core.models import Asset, HTTPService
 from reconmap.scanners.http import check_http_service
+from reconmap.utils.scope import is_in_scope
 
 
 def run_recon(domain: str) -> list[Asset]:
@@ -53,9 +54,12 @@ def run_recon(domain: str) -> list[Asset]:
 
     # -------------------------
     # HTTP discovery
-    # -------------------------
-
     for asset in assets.values():
+        if not is_in_scope(
+            asset.hostname,
+            domain,
+        ):
+            continue
 
         http_results = check_http_service(asset.hostname)
 
