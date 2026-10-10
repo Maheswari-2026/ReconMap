@@ -12,7 +12,10 @@ from reconmap.scanners.http import check_http_service
 from reconmap.utils.scope import is_in_scope
 
 
-def run_recon(domain: str) -> list[Asset]:
+def run_recon(
+    domain: str,
+    passive_only: bool = False,
+) -> list[Asset]:
     """Run reconnaissance and return discovered assets."""
 
     assets = {}
@@ -54,25 +57,27 @@ def run_recon(domain: str) -> list[Asset]:
 
     # -------------------------
     # HTTP discovery
-    for asset in assets.values():
-        if not is_in_scope(
-            asset.hostname,
-            domain,
-        ):
-            continue
+    # -------------------------
+    if not passive_only:
+        for asset in assets.values():
+            if not is_in_scope(
+                asset.hostname,
+                domain,
+            ):
+                continue
 
-        http_results = check_http_service(asset.hostname)
+            http_results = check_http_service(asset.hostname)
 
-        asset.http_services = [
-            HTTPService(
-                scheme=result["scheme"],
-                url=result["url"],
-                final_url=result["final_url"],
-                status_code=result["status_code"],
-                response_time=result["response_time"],
-                server=result["server"],
-            )
-            for result in http_results
-        ]
+            asset.http_services = [
+                HTTPService(
+                    scheme=result["scheme"],
+                    url=result["url"],
+                    final_url=result["final_url"],
+                    status_code=result["status_code"],
+                    response_time=result["response_time"],
+                    server=result["server"],
+                )
+                for result in http_results
+            ]
 
     return list(assets.values())

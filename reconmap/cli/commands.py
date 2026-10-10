@@ -16,6 +16,12 @@ def main():
         "domain",
         help="Target domain",
     )
+    
+    parser.add_argument(
+    "--passive-only",
+    action="store_true",
+    help="Perform passive reconnaissance only",
+    )
 
     args = parser.parse_args()
 
@@ -33,7 +39,10 @@ def main():
     print("RECONNAISSANCE")
     print("=" * 50)
 
-    assets = run_recon(domain)
+    assets = run_recon(
+    domain,
+    passive_only=args.passive_only,
+    )
     
     findings = analyze_assets(assets)
     
