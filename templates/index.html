@@ -1,0 +1,617 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>ReconMap | Security Dashboard</title>
+
+    <style>
+        :root {
+            color-scheme: dark;
+            --bg: #0b1120;
+            --panel: #121c30;
+            --panel-light: #192943;
+            --border: #293751;
+            --text: #edf3ff;
+            --muted: #a6b4cc;
+            --blue: #4388ff;
+            --blue-hover: #2d72eb;
+            --green: #4ade80;
+            --red: #f87171;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            font-family: Arial, Helvetica, sans-serif;
+            line-height: 1.6;
+        }
+
+        header {
+            padding: 20px 7%;
+            background: #0e1729;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .brand {
+            font-size: 25px;
+            font-weight: bold;
+            letter-spacing: 0.4px;
+        }
+
+        .brand span {
+            color: #6ba2ff;
+        }
+
+        .subtitle {
+            color: var(--muted);
+            margin-top: 2px;
+        }
+
+        .container {
+            width: min(1100px, 90%);
+            margin: 38px auto;
+        }
+
+        .hero {
+            margin-bottom: 28px;
+        }
+
+        h1 {
+            margin: 0 0 10px;
+            font-size: clamp(28px, 5vw, 42px);
+            line-height: 1.2;
+        }
+
+        h2 {
+            margin-top: 0;
+            font-size: 24px;
+        }
+
+        h3 {
+            margin-top: 0;
+        }
+
+        p {
+            color: var(--muted);
+        }
+
+        .panel {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 22px;
+            min-width: 0;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin: 16px 0 8px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 14px;
+            border-radius: 9px;
+            border: 1px solid var(--border);
+            background: #0b1425;
+            color: var(--text);
+            font-size: 16px;
+        }
+
+        input[type="text"]:focus {
+            outline: 2px solid var(--blue);
+            outline-offset: 2px;
+        }
+
+        .mode {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px 22px;
+            margin: 16px 0;
+        }
+
+        .mode label,
+        .consent {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            font-weight: normal;
+            margin: 8px 0;
+        }
+
+        input[type="radio"],
+        input[type="checkbox"] {
+            accent-color: var(--blue);
+        }
+
+        button,
+        .download {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 17px;
+            border: 0;
+            border-radius: 9px;
+            background: var(--blue);
+            color: white;
+            font-size: 15px;
+            font-weight: bold;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        button {
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        button:hover,
+        .download:hover {
+            background: var(--blue-hover);
+        }
+
+        button:focus-visible,
+        .download:focus-visible {
+            outline: 2px solid white;
+            outline-offset: 3px;
+        }
+
+        .notice,
+        .error,
+        .success {
+            padding: 13px 15px;
+            border-radius: 9px;
+            margin: 15px 0;
+        }
+
+        .notice {
+            background: #172942;
+            color: #c7ddff;
+        }
+
+        .error {
+            background: #421e2a;
+            color: #fecaca;
+            border: 1px solid #783548;
+        }
+
+        .success {
+            background: #123326;
+            color: #bbf7d0;
+            border: 1px solid #246747;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 14px;
+            margin-bottom: 22px;
+        }
+
+        .stat {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 19px;
+            min-width: 0;
+        }
+
+        .stat-label {
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .stat strong {
+            display: block;
+            font-size: 32px;
+            color: var(--green);
+            line-height: 1.3;
+            margin-top: 5px;
+        }
+
+        .table-wrap {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+            text-align: left;
+            vertical-align: top;
+            overflow-wrap: anywhere;
+        }
+
+        th {
+            color: #9fc2ff;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        tbody tr:hover {
+            background: rgba(67, 136, 255, 0.05);
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 3px 9px;
+            border-radius: 20px;
+            background: #1d3558;
+            color: #bfdbfe;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .downloads {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .downloads .download {
+            background: #1d477d;
+        }
+
+        .downloads .download:hover {
+            background: #285b9b;
+        }
+
+        .report-name {
+            overflow-wrap: anywhere;
+            color: var(--text);
+        }
+
+        .empty {
+            color: var(--muted);
+            padding: 15px 0;
+        }
+
+        footer {
+            text-align: center;
+            color: var(--muted);
+            padding: 28px 5%;
+            border-top: 1px solid var(--border);
+            font-size: 13px;
+        }
+
+        @media (max-width: 650px) {
+            header {
+                padding: 18px 5%;
+            }
+
+            .container {
+                width: 92%;
+                margin: 25px auto;
+            }
+
+            .panel {
+                padding: 17px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .downloads {
+                flex-direction: column;
+            }
+
+            .downloads .download {
+                width: 100%;
+            }
+
+            table {
+                min-width: 540px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div class="brand">Recon<span>Map</span> 🗺️</div>
+    <div class="subtitle">Attack Surface Intelligence Dashboard</div>
+</header>
+
+<main class="container">
+
+    <section class="hero">
+        <h1>Understand your attack surface.</h1>
+        <p>
+            Collect domain intelligence and review discovered assets,
+            web services, and observations in one place.
+        </p>
+    </section>
+
+    <!-- Domain input and scan options -->
+    <section class="panel">
+        <h2>Start reconnaissance</h2>
+
+        <div class="notice">
+            Only assess domains you own or have explicit permission to test.
+            Standard mode sends HTTP/HTTPS requests to discovered in-scope hosts.
+        </div>
+
+        {% if error %}
+            <div class="error" role="alert">
+                {{ error }}
+            </div>
+        {% endif %}
+
+        <form method="POST" action="{{ url_for('index') }}">
+
+            <label for="domain">Target domain</label>
+
+            <input
+                id="domain"
+                name="domain"
+                type="text"
+                placeholder="example.com"
+                value="{{ domain }}"
+                required
+                maxlength="253"
+                pattern="(?i)([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}"
+                title="Enter a domain such as example.com"
+                autocomplete="url"
+            >
+
+            <label>Scan mode</label>
+
+            <div class="mode">
+                <label>
+                    <input
+                        type="radio"
+                        name="mode"
+                        value="passive"
+                        {% if passive_only %}checked{% endif %}
+                    >
+                    Passive only
+                </label>
+
+                <label>
+                    <input
+                        type="radio"
+                        name="mode"
+                        value="standard"
+                        {% if not passive_only %}checked{% endif %}
+                    >
+                    Standard (includes HTTP checks)
+                </label>
+            </div>
+
+            <label class="consent">
+                <input
+                    type="checkbox"
+                    name="authorized"
+                    value="yes"
+                    required
+                >
+                I own this domain or have permission to assess it.
+            </label>
+
+            <button type="submit">
+                Start Reconnaissance
+            </button>
+
+        </form>
+    </section>
+
+    <!-- Results -->
+    {% if results %}
+
+        <section>
+            <h2>Results for {{ results.target }}</h2>
+
+            <p>
+                Scan mode:
+                {% if results.passive_only %}
+                    <span class="tag">Passive only</span>
+                {% else %}
+                    <span class="tag">Standard</span>
+                {% endif %}
+            </p>
+
+            <div class="stats">
+
+                <div class="stat">
+                    <div class="stat-label">Assets discovered</div>
+                    <strong>{{ results.asset_count }}</strong>
+                </div>
+
+                <div class="stat">
+                    <div class="stat-label">HTTP services</div>
+                    <strong>{{ results.http_count }}</strong>
+                </div>
+
+                <div class="stat">
+                    <div class="stat-label">Observations</div>
+                    <strong>{{ results.finding_count }}</strong>
+                </div>
+
+            </div>
+
+            <!-- Asset table -->
+            <div class="panel">
+                <h2>Discovered assets</h2>
+
+                {% if results.assets %}
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Hostname</th>
+                                    <th>IPv4</th>
+                                    <th>IPv6</th>
+                                    <th>Nameservers</th>
+                                    <th>Web services</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {% for asset in results.assets %}
+                                    <tr>
+                                        <td>{{ asset.hostname }}</td>
+
+                                        <td>
+                                            {{ asset.ipv4 | join(", ") or "—" }}
+                                        </td>
+
+                                        <td>
+                                            {{ asset.ipv6 | join(", ") or "—" }}
+                                        </td>
+
+                                        <td>
+                                            {{ asset.nameservers | join(", ") or "—" }}
+                                        </td>
+
+                                        <td>
+                                            {% if asset.http_services %}
+                                                {% for service in asset.http_services %}
+                                                    <div>
+                                                        <span class="tag">
+                                                            {{ service.scheme | upper }}
+                                                            {{ service.status_code }}
+                                                        </span>
+                                                        <p>
+                                                            {{ service.final_url }}
+                                                        </p>
+                                                    </div>
+                                                {% endfor %}
+                                            {% else %}
+                                                —
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="empty">No assets were discovered.</p>
+                {% endif %}
+            </div>
+
+            <!-- Attack surface observations -->
+            <div class="panel">
+                <h2>Attack-surface observations</h2>
+
+                {% if results.findings %}
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Hostname</th>
+                                    <th>Observation</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {% for finding in results.findings %}
+                                    <tr>
+                                        <td>{{ finding.hostname }}</td>
+                                        <td>
+                                            <span class="tag">
+                                                {{ finding.finding_type }}
+                                            </span>
+                                        </td>
+                                        <td>{{ finding.description }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="empty">
+                        No observations were generated.
+                    </p>
+                {% endif %}
+            </div>
+
+            <!-- Report downloads -->
+            <div class="panel">
+                <h2>Reports generated</h2>
+
+                <div class="success">
+                    Your JSON and CSV reports are ready.
+                </div>
+
+                <p>
+                    <strong>JSON report:</strong><br>
+                    <span class="report-name">
+                        {{ results.target }}-report.json
+                    </span>
+                </p>
+
+                <p>
+                    <strong>CSV report:</strong><br>
+                    <span class="report-name">
+                        {{ results.target }}-report.csv
+                    </span>
+                </p>
+
+                <div class="downloads">
+
+                    <a
+                        class="download"
+                        href="{{ url_for(
+                            'download_report',
+                            report_type='json',
+                            domain=results.target
+                        ) }}"
+                    >
+                        ⬇ Download JSON
+                    </a>
+
+                    <a
+                        class="download"
+                        href="{{ url_for(
+                            'download_report',
+                            report_type='csv',
+                            domain=results.target
+                        ) }}"
+                    >
+                        ⬇ Download CSV
+                    </a>
+
+                </div>
+
+                <p>
+                    Keep downloaded reports private if they contain
+                    information about systems you assess.
+                </p>
+            </div>
+
+        </section>
+
+    {% endif %}
+
+</main>
+
+<footer>
+    ReconMap · Educational cybersecurity project · Authorized use only
+</footer>
+
+</body>
+</html>
