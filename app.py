@@ -37,6 +37,9 @@ app.config["SESSION_COOKIE_SECURE"] = (
     os.environ.get("RECONMAP_HTTPS", "").lower() == "true"
 )
 
+# Allow HTTPS requests when the browser omits the Referer header.
+app.config["WTF_CSRF_SSL_STRICT"] = False
+
 csrf = CSRFProtect(app)
 
 BASE_DIR = Path(__file__).resolve().parent
