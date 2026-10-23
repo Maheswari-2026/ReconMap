@@ -47,9 +47,10 @@ class MockTXTRecord:
 def test_get_a_records(monkeypatch):
     """Test A record discovery without real DNS requests."""
 
-    def fake_resolve(domain, record_type):
+    def fake_resolve(domain, record_type, **kwargs):
         assert domain == "example.com"
         assert record_type == "A"
+        assert kwargs["lifetime"] == 5.0
 
         return [
             MockARecord("93.184.216.34"),
@@ -189,9 +190,7 @@ def test_get_cname_records(monkeypatch):
         assert record_type == "CNAME"
 
         return [
-            MockCNAMERecord(
-                "example.com."
-            )
+            MockCNAMERecord("example.com."),
         ]
 
     monkeypatch.setattr(

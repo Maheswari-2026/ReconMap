@@ -1,6 +1,7 @@
 
 import os
 import secrets
+import shutil
 import threading
 import time
 from dataclasses import asdict
@@ -26,9 +27,8 @@ from reconmap.utils.validators import normalize_domain, validate_domain
 
 app = Flask(__name__)
 
-app.config["SECRET_KEY"] = os.environ.get(
-    "RECONMAP_SECRET_KEY",
-    secrets.token_hex(32),
+app.config["SECRET_KEY"] = (
+    os.environ.get("RECONMAP_SECRET_KEY") or secrets.token_hex(32)
 )
 app.config["MAX_CONTENT_LENGTH"] = 16 * 1024
 app.config["SESSION_COOKIE_HTTPONLY"] = True
@@ -177,9 +177,18 @@ def index():
                         len(asset.http_services) for asset in assets
                     ),
                 }
-
             except Exception:
                 app.logger.exception("ReconMap scan failed")
+
+                # Remove any incomplete report directory created by this scan.
+                if "report_dir" in locals() and report_dir.exists():
+                    try:
+                        shutil.rmtree(report_dir)
+                    except OSError:
+                        app.logger.exception(
+                            "Could not remove incomplete report directory"
+                        )
+
                 error = (
                     "The scan could not be completed. "
                     "Check the application terminal for details."

@@ -5,7 +5,11 @@ def get_a_records(domain: str) -> list[str]:
     """Return IPv4 addresses for a domain."""
 
     try:
-        answers = dns.resolver.resolve(domain, "A")
+        answers = dns.resolver.resolve(
+            domain,
+            "A",
+            lifetime=5.0,
+        )
 
         return [answer.address for answer in answers]
 
