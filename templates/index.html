@@ -3,23 +3,21 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <title>ReconMap | Security Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReconMap | Security Reconnaissance</title>
 
     <style>
         :root {
-            color-scheme: dark;
-            --bg: #0b1120;
-            --panel: #121c30;
-            --panel-light: #192943;
-            --border: #293751;
+            --background: #0b1120;
+            --panel: #151f32;
+            --panel-light: #1d2a40;
             --text: #edf3ff;
-            --muted: #a6b4cc;
-            --blue: #4388ff;
-            --blue-hover: #2d72eb;
-            --green: #4ade80;
-            --red: #f87171;
+            --muted: #a7b5ca;
+            --accent: #45b7f7;
+            --border: #30415a;
+            --success: #39d98a;
+            --warning: #ffca6a;
+            --danger: #ff7b86;
         }
 
         * {
@@ -28,36 +26,38 @@
 
         body {
             margin: 0;
-            background: var(--bg);
-            color: var(--text);
             font-family: Arial, Helvetica, sans-serif;
+            background: var(--background);
+            color: var(--text);
             line-height: 1.6;
         }
 
         header {
-            padding: 20px 7%;
-            background: #0e1729;
             border-bottom: 1px solid var(--border);
+            padding: 22px 6%;
+            background: #101a2b;
         }
 
         .brand {
             font-size: 25px;
             font-weight: bold;
-            letter-spacing: 0.4px;
+            letter-spacing: 1px;
         }
 
         .brand span {
-            color: #6ba2ff;
+            color: var(--accent);
         }
 
         .subtitle {
             color: var(--muted);
-            margin-top: 2px;
+            font-size: 14px;
+            margin-top: 3px;
         }
 
-        .container {
-            width: min(1100px, 90%);
-            margin: 38px auto;
+        main {
+            max-width: 1100px;
+            margin: 35px auto;
+            padding: 0 20px;
         }
 
         .hero {
@@ -65,553 +65,519 @@
         }
 
         h1 {
-            margin: 0 0 10px;
-            font-size: clamp(28px, 5vw, 42px);
+            font-size: clamp(28px, 5vw, 40px);
             line-height: 1.2;
+            margin-bottom: 10px;
         }
 
         h2 {
+            font-size: 21px;
             margin-top: 0;
-            font-size: 24px;
         }
 
         h3 {
-            margin-top: 0;
+            font-size: 17px;
         }
 
-        p {
+        .muted {
             color: var(--muted);
         }
 
         .panel {
             background: var(--panel);
             border: 1px solid var(--border);
-            border-radius: 16px;
+            border-radius: 14px;
             padding: 24px;
-            margin-bottom: 22px;
-            min-width: 0;
+            margin-bottom: 24px;
         }
 
         label {
             display: block;
             font-weight: bold;
-            margin: 16px 0 8px;
+            margin-bottom: 8px;
         }
 
-        input[type="text"] {
+        input[type="text"],
+        select {
             width: 100%;
-            padding: 14px;
-            border-radius: 9px;
+            padding: 13px;
+            background: #0b1424;
             border: 1px solid var(--border);
-            background: #0b1425;
+            border-radius: 8px;
             color: var(--text);
-            font-size: 16px;
+            font-size: 15px;
+            margin-bottom: 18px;
         }
 
-        input[type="text"]:focus {
-            outline: 2px solid var(--blue);
-            outline-offset: 2px;
-        }
-
-        .mode {
+        .checkbox-row {
             display: flex;
-            flex-wrap: wrap;
-            gap: 12px 22px;
-            margin: 16px 0;
+            gap: 10px;
+            align-items: flex-start;
+            margin: 15px 0 20px;
+            color: var(--muted);
         }
 
-        .mode label,
-        .consent {
-            display: flex;
-            align-items: center;
-            gap: 9px;
-            font-weight: normal;
-            margin: 8px 0;
-        }
-
-        input[type="radio"],
-        input[type="checkbox"] {
-            accent-color: var(--blue);
+        .checkbox-row input {
+            margin-top: 6px;
         }
 
         button,
-        .download {
-            display: inline-flex;
-            justify-content: center;
-            align-items: center;
-            gap: 8px;
-            padding: 12px 17px;
+        .btn {
+            display: inline-block;
             border: 0;
-            border-radius: 9px;
-            background: var(--blue);
-            color: white;
-            font-size: 15px;
+            border-radius: 8px;
+            padding: 11px 17px;
             font-weight: bold;
+            font-size: 14px;
             text-decoration: none;
             cursor: pointer;
-            transition: background 0.2s ease;
-        }
-
-        button {
-            width: 100%;
-            margin-top: 20px;
+            transition: opacity 0.2s;
         }
 
         button:hover,
-        .download:hover {
-            background: var(--blue-hover);
+        .btn:hover {
+            opacity: 0.85;
         }
 
-        button:focus-visible,
-        .download:focus-visible {
-            outline: 2px solid white;
-            outline-offset: 3px;
+        .btn-primary {
+            background: var(--accent);
+            color: #061321;
         }
 
-        .notice,
-        .error,
-        .success {
-            padding: 13px 15px;
-            border-radius: 9px;
-            margin: 15px 0;
+        .btn-secondary {
+            background: var(--panel-light);
+            border: 1px solid var(--border);
+            color: var(--text);
         }
 
         .notice {
-            background: #172942;
-            color: #c7ddff;
+            padding: 14px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            overflow-wrap: anywhere;
         }
 
         .error {
-            background: #421e2a;
-            color: #fecaca;
-            border: 1px solid #783548;
+            background: #351c29;
+            border: 1px solid #793747;
+            color: #ffd7dc;
         }
 
-        .success {
-            background: #123326;
-            color: #bbf7d0;
-            border: 1px solid #246747;
+        .info {
+            background: #142b40;
+            border: 1px solid #245b7b;
+            color: #c8eaff;
         }
 
         .stats {
             display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
             gap: 14px;
-            margin-bottom: 22px;
+            margin-bottom: 24px;
         }
 
         .stat {
+            padding: 20px;
             background: var(--panel);
             border: 1px solid var(--border);
             border-radius: 12px;
-            padding: 19px;
-            min-width: 0;
+        }
+
+        .stat-number {
+            font-size: 30px;
+            font-weight: bold;
+            color: var(--accent);
         }
 
         .stat-label {
+            font-size: 13px;
             color: var(--muted);
-            font-size: 14px;
         }
 
-        .stat strong {
-            display: block;
-            font-size: 32px;
-            color: var(--green);
-            line-height: 1.3;
-            margin-top: 5px;
+        .section-heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
         }
 
-        .table-wrap {
-            width: 100%;
-            overflow-x: auto;
+        .download-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 16px;
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 14px;
-        }
-
-        th,
-        td {
-            padding: 12px;
-            border-bottom: 1px solid var(--border);
-            text-align: left;
-            vertical-align: top;
+        .asset-card,
+        .finding-card {
+            background: #101a2b;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 17px;
+            margin-top: 14px;
             overflow-wrap: anywhere;
         }
 
-        th {
-            color: #9fc2ff;
-            font-weight: bold;
-            white-space: nowrap;
-        }
-
-        tbody tr:hover {
-            background: rgba(67, 136, 255, 0.05);
+        .asset-card h3,
+        .finding-card h3 {
+            margin-top: 0;
         }
 
         .tag {
             display: inline-block;
-            padding: 3px 9px;
-            border-radius: 20px;
-            background: #1d3558;
-            color: #bfdbfe;
+            background: #21344b;
+            color: #c9e8ff;
+            border-radius: 5px;
+            padding: 3px 8px;
+            margin: 3px 4px 3px 0;
             font-size: 12px;
+        }
+
+        .severity {
             font-weight: bold;
+            color: var(--warning);
         }
 
-        .downloads {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-top: 20px;
-        }
-
-        .downloads .download {
-            background: #1d477d;
-        }
-
-        .downloads .download:hover {
-            background: #285b9b;
-        }
-
-        .report-name {
+        .data-list {
+            padding-left: 20px;
             overflow-wrap: anywhere;
-            color: var(--text);
         }
 
-        .empty {
-            color: var(--muted);
-            padding: 15px 0;
+        .data-list li {
+            margin-bottom: 5px;
+        }
+
+        details {
+            margin-top: 12px;
+        }
+
+        summary {
+            cursor: pointer;
+            color: var(--accent);
+            font-weight: bold;
         }
 
         footer {
             text-align: center;
             color: var(--muted);
-            padding: 28px 5%;
+            padding: 25px 15px;
             border-top: 1px solid var(--border);
             font-size: 13px;
         }
 
-        @media (max-width: 650px) {
+        @media (max-width: 600px) {
             header {
                 padding: 18px 5%;
             }
 
-            .container {
-                width: 92%;
-                margin: 25px auto;
+            main {
+                padding: 0 13px;
+                margin-top: 22px;
             }
 
             .panel {
                 padding: 17px;
             }
 
-            .stats {
-                grid-template-columns: 1fr;
-            }
-
-            .downloads {
-                flex-direction: column;
-            }
-
-            .downloads .download {
-                width: 100%;
-            }
-
-            table {
-                min-width: 540px;
+            .stat-number {
+                font-size: 25px;
             }
         }
     </style>
 </head>
 
 <body>
-
 <header>
-    <div class="brand">Recon<span>Map</span> 🗺️</div>
-    <div class="subtitle">Attack Surface Intelligence Dashboard</div>
+    <div class="brand">Recon<span>Map</span></div>
+    <div class="subtitle">Automated Subdomain &amp; Asset Enumeration Tool</div>
 </header>
 
-<main class="container">
-
+<main>
     <section class="hero">
-        <h1>Understand your attack surface.</h1>
-        <p>
-            Collect domain intelligence and review discovered assets,
-            web services, and observations in one place.
+        <h1>Security Reconnaissance Dashboard</h1>
+        <p class="muted">
+            Discover domain assets, review exposed services, and generate
+            structured security reports for authorized assessments.
         </p>
     </section>
 
-    <!-- Domain input and scan options -->
-    <section class="panel">
-        <h2>Start reconnaissance</h2>
-
-        <div class="notice">
-            Only assess domains you own or have explicit permission to test.
-            Standard mode sends HTTP/HTTPS requests to discovered in-scope hosts.
+    {% if error %}
+        <div class="notice error" role="alert">
+            <strong>Notice:</strong> {{ error }}
         </div>
+    {% endif %}
 
-        {% if error %}
-            <div class="error" role="alert">
-                {{ error }}
-            </div>
-        {% endif %}
+    <section class="panel">
+        <h2>Start a Scan</h2>
+        <p class="muted">
+            Only scan domains you own or have explicit permission to assess.
+        </p>
 
         <form method="POST" action="{{ url_for('index') }}">
+            <input
+                type="hidden"
+                name="csrf_token"
+                value="{{ csrf_token() }}"
+            >
 
             <label for="domain">Target domain</label>
-
             <input
+                type="text"
                 id="domain"
                 name="domain"
-                type="text"
                 placeholder="example.com"
                 value="{{ domain }}"
-                required
                 maxlength="253"
-                pattern="(?i)([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}"
-                title="Enter a domain such as example.com"
+                required
                 autocomplete="url"
             >
 
-            <label>Scan mode</label>
+            <label for="mode">Scan mode</label>
+            <select id="mode" name="mode">
+                <option
+                    value="passive"
+                    {% if passive_only %}selected{% endif %}
+                >
+                    Passive reconnaissance only
+                </option>
+                <option
+                    value="active"
+                    {% if not passive_only %}selected{% endif %}
+                >
+                    Active scan
+                </option>
+            </select>
 
-            <div class="mode">
-                <label>
-                    <input
-                        type="radio"
-                        name="mode"
-                        value="passive"
-                        {% if passive_only %}checked{% endif %}
-                    >
-                    Passive only
-                </label>
-
-                <label>
-                    <input
-                        type="radio"
-                        name="mode"
-                        value="standard"
-                        {% if not passive_only %}checked{% endif %}
-                    >
-                    Standard (includes HTTP checks)
-                </label>
-            </div>
-
-            <label class="consent">
+            <label class="checkbox-row">
                 <input
                     type="checkbox"
                     name="authorized"
                     value="yes"
                     required
                 >
-                I own this domain or have permission to assess it.
+                <span>
+                    I confirm that I own this domain or have permission
+                    to assess it.
+                </span>
             </label>
 
-            <button type="submit">
+            <button type="submit" class="btn-primary">
                 Start Reconnaissance
             </button>
-
         </form>
     </section>
 
-    <!-- Results -->
     {% if results %}
-
-        <section>
-            <h2>Results for {{ results.target }}</h2>
-
-            <p>
-                Scan mode:
-                {% if results.passive_only %}
-                    <span class="tag">Passive only</span>
-                {% else %}
-                    <span class="tag">Standard</span>
-                {% endif %}
-            </p>
-
-            <div class="stats">
-
-                <div class="stat">
-                    <div class="stat-label">Assets discovered</div>
-                    <strong>{{ results.asset_count }}</strong>
-                </div>
-
-                <div class="stat">
-                    <div class="stat-label">HTTP services</div>
-                    <strong>{{ results.http_count }}</strong>
-                </div>
-
-                <div class="stat">
-                    <div class="stat-label">Observations</div>
-                    <strong>{{ results.finding_count }}</strong>
-                </div>
-
-            </div>
-
-            <!-- Asset table -->
-            <div class="panel">
-                <h2>Discovered assets</h2>
-
-                {% if results.assets %}
-                    <div class="table-wrap">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Hostname</th>
-                                    <th>IPv4</th>
-                                    <th>IPv6</th>
-                                    <th>Nameservers</th>
-                                    <th>Web services</th>
-                                </tr>
-                            </thead>
-
-                            <tbody>
-                                {% for asset in results.assets %}
-                                    <tr>
-                                        <td>{{ asset.hostname }}</td>
-
-                                        <td>
-                                            {{ asset.ipv4 | join(", ") or "—" }}
-                                        </td>
-
-                                        <td>
-                                            {{ asset.ipv6 | join(", ") or "—" }}
-                                        </td>
-
-                                        <td>
-                                            {{ asset.nameservers | join(", ") or "—" }}
-                                        </td>
-
-                                        <td>
-                                            {% if asset.http_services %}
-                                                {% for service in asset.http_services %}
-                                                    <div>
-                                                        <span class="tag">
-                                                            {{ service.scheme | upper }}
-                                                            {{ service.status_code }}
-                                                        </span>
-                                                        <p>
-                                                            {{ service.final_url }}
-                                                        </p>
-                                                    </div>
-                                                {% endfor %}
-                                            {% else %}
-                                                —
-                                            {% endif %}
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                {% else %}
-                    <p class="empty">No assets were discovered.</p>
-                {% endif %}
-            </div>
-
-            <!-- Attack surface observations -->
-            <div class="panel">
-                <h2>Attack-surface observations</h2>
-
-                {% if results.findings %}
-                    <div class="table-wrap">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Hostname</th>
-                                    <th>Observation</th>
-                                    <th>Description</th>
-                                </tr>
-                            </thead>
-
-                            <tbody>
-                                {% for finding in results.findings %}
-                                    <tr>
-                                        <td>{{ finding.hostname }}</td>
-                                        <td>
-                                            <span class="tag">
-                                                {{ finding.finding_type }}
-                                            </span>
-                                        </td>
-                                        <td>{{ finding.description }}</td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                {% else %}
-                    <p class="empty">
-                        No observations were generated.
+        <section class="panel">
+            <div class="section-heading">
+                <div>
+                    <h2>Scan Results</h2>
+                    <p class="muted">
+                        Target: <strong>{{ results.target }}</strong>
                     </p>
-                {% endif %}
+                    <p class="muted">
+                        Mode:
+                        {% if results.passive_only %}
+                            Passive reconnaissance
+                        {% else %}
+                            Active scan
+                        {% endif %}
+                    </p>
+                </div>
+                <span class="tag">Scan completed</span>
             </div>
 
-            <!-- Report downloads -->
-            <div class="panel">
-                <h2>Reports generated</h2>
+            <div class="download-buttons">
+                <a
+                    href="{{ url_for(
+                        'download_report',
+                        report_type='json',
+                        scan_id=results.scan_id
+                    ) }}"
+                    class="btn btn-secondary"
+                >
+                    Download JSON
+                </a>
 
-                <div class="success">
-                    Your JSON and CSV reports are ready.
-                </div>
-
-                <p>
-                    <strong>JSON report:</strong><br>
-                    <span class="report-name">
-                        {{ results.target }}-report.json
-                    </span>
-                </p>
-
-                <p>
-                    <strong>CSV report:</strong><br>
-                    <span class="report-name">
-                        {{ results.target }}-report.csv
-                    </span>
-                </p>
-
-                <div class="downloads">
-
-                    <a
-                        class="download"
-                        href="{{ url_for(
-                            'download_report',
-                            report_type='json',
-                            domain=results.target
-                        ) }}"
-                    >
-                        ⬇ Download JSON
-                    </a>
-
-                    <a
-                        class="download"
-                        href="{{ url_for(
-                            'download_report',
-                            report_type='csv',
-                            domain=results.target
-                        ) }}"
-                    >
-                        ⬇ Download CSV
-                    </a>
-
-                </div>
-
-                <p>
-                    Keep downloaded reports private if they contain
-                    information about systems you assess.
-                </p>
+                <a
+                    href="{{ url_for(
+                        'download_report',
+                        report_type='csv',
+                        scan_id=results.scan_id
+                    ) }}"
+                    class="btn btn-secondary"
+                >
+                    Download CSV
+                </a>
             </div>
-
         </section>
 
-    {% endif %}
+        <section class="stats">
+            <div class="stat">
+                <div class="stat-number">{{ results.asset_count }}</div>
+                <div class="stat-label">Assets Discovered</div>
+            </div>
 
+            <div class="stat">
+                <div class="stat-number">{{ results.finding_count }}</div>
+                <div class="stat-label">Security Findings</div>
+            </div>
+
+            <div class="stat">
+                <div class="stat-number">{{ results.http_count }}</div>
+                <div class="stat-label">HTTP Services</div>
+            </div>
+        </section>
+
+        <section class="panel">
+            <h2>Discovered Assets</h2>
+
+            {% if results.assets %}
+                {% for asset in results.assets %}
+                    <article class="asset-card">
+                        <h3>{{ asset.hostname }}</h3>
+
+                        <p>
+                            <span class="tag">IPv4: {{ asset.ipv4 | length }}</span>
+                            <span class="tag">IPv6: {{ asset.ipv6 | length }}</span>
+                            <span class="tag">HTTP: {{ asset.http_services | length }}</span>
+                        </p>
+
+                        <details>
+                            <summary>View asset details</summary>
+
+                            <h4>IPv4 Addresses</h4>
+                            <ul class="data-list">
+                                {% for address in asset.ipv4 %}
+                                    <li>{{ address }}</li>
+                                {% else %}
+                                    <li>None discovered</li>
+                                {% endfor %}
+                            </ul>
+
+                            <h4>IPv6 Addresses</h4>
+                            <ul class="data-list">
+                                {% for address in asset.ipv6 %}
+                                    <li>{{ address }}</li>
+                                {% else %}
+                                    <li>None discovered</li>
+                                {% endfor %}
+                            </ul>
+
+                            <h4>Name Servers (NS)</h4>
+                            <ul class="data-list">
+                                {% for server in asset.nameservers %}
+                                    <li>{{ server }}</li>
+                                {% else %}
+                                    <li>None discovered</li>
+                                {% endfor %}
+                            </ul>
+
+                            <h4>Mail Servers (MX)</h4>
+                            <ul class="data-list">
+                                {% for server in asset.mx_records %}
+                                    <li>{{ server }}</li>
+                                {% else %}
+                                    <li>None discovered</li>
+                                {% endfor %}
+                            </ul>
+
+                            <h4>TXT Records</h4>
+                            <ul class="data-list">
+                                {% for record in asset.txt_records %}
+                                    <li>{{ record }}</li>
+                                {% else %}
+                                    <li>None discovered</li>
+                                {% endfor %}
+                            </ul>
+
+                            <h4>CNAME Records</h4>
+                            <ul class="data-list">
+                                {% for record in asset.cname_records %}
+                                    <li>{{ record }}</li>
+                                {% else %}
+                                    <li>None discovered</li>
+                                {% endfor %}
+                            </ul>
+
+                            <h4>Certificate Sources</h4>
+                            <ul class="data-list">
+                                {% for source in asset.certificate_sources %}
+                                    <li>{{ source }}</li>
+                                {% else %}
+                                    <li>None discovered</li>
+                                {% endfor %}
+                            </ul>
+
+                            <h4>HTTP Services</h4>
+                            {% for service in asset.http_services %}
+                                <div class="asset-card">
+                                    <p>
+                                        <strong>URL:</strong>
+                                        {{ service.url | default('N/A') }}
+                                    </p>
+                                    <p>
+                                        <strong>Status:</strong>
+                                        {{ service.status_code | default('N/A') }}
+                                    </p>
+                                    <p>
+                                        <strong>Title:</strong>
+                                        {{ service.title | default('N/A') }}
+                                    </p>
+                                </div>
+                            {% else %}
+                                <p class="muted">
+                                    No HTTP services were collected.
+                                </p>
+                            {% endfor %}
+                        </details>
+                    </article>
+                {% endfor %}
+            {% else %}
+                <p class="muted">No assets were discovered.</p>
+            {% endif %}
+        </section>
+
+        <section class="panel">
+            <h2>Security Findings</h2>
+
+            {% if results.findings %}
+                {% for finding in results.findings %}
+                    <article class="finding-card">
+                        <h3>{{ finding.title | default('Security finding') }}</h3>
+
+                        <p>
+                            <span class="severity">
+                                Severity:
+                                {{ finding.severity | default('Informational') }}
+                            </span>
+                        </p>
+
+                        <p>
+                            {{ finding.description | default('No description available.') }}
+                        </p>
+
+                        {% if finding.recommendation is defined %}
+                            <p>
+                                <strong>Recommendation:</strong>
+                                {{ finding.recommendation }}
+                            </p>
+                        {% endif %}
+                    </article>
+                {% endfor %}
+            {% else %}
+                <p class="muted">
+                    No findings were returned by the analyzer.
+                    This does not guarantee that the target is secure.
+                </p>
+            {% endif %}
+        </section>
+    {% endif %}
 </main>
 
 <footer>
-    ReconMap · Educational cybersecurity project · Authorized use only
+    ReconMap &mdash; Use only for authorized security testing.
 </footer>
-
 </body>
 </html>

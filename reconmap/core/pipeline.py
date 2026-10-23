@@ -1,3 +1,4 @@
+
 from reconmap.collectors.certificates import get_certificate_subdomains
 from reconmap.collectors.dns import (
     get_a_records,
@@ -12,58 +13,49 @@ from reconmap.scanners.http import check_http_service
 from reconmap.utils.scope import is_in_scope
 
 
+MAX_ASSETS = 100
+
+
 def run_recon(
     domain: str,
     passive_only: bool = False,
 ) -> list[Asset]:
-    """Run reconnaissance and return discovered assets."""
+    """Run reconnaissance on the requested domain and in-scope subdomains."""
 
     assets = {}
 
-    # -------------------------
-    # Target domain DNS
-    # -------------------------
-
     target_asset = Asset(hostname=domain)
-
     target_asset.ipv4 = get_a_records(domain)
     target_asset.ipv6 = get_aaaa_records(domain)
     target_asset.nameservers = get_ns_records(domain)
     target_asset.mail_servers = get_mx_records(domain)
     target_asset.txt_records = get_txt_records(domain)
     target_asset.cname_records = get_cname_records(domain)
-
-    target_asset.certificate_sources.append(
-        "certificate_transparency"
-    )
+    target_asset.certificate_sources.append("certificate_transparency")
 
     assets[domain] = target_asset
 
-    # -------------------------
-    # Certificate Transparency
-    # -------------------------
-
+    # Include only valid in-scope certificate names, up to the asset limit.
     subdomains = get_certificate_subdomains(domain)
 
     for subdomain in subdomains:
+        hostname = subdomain.strip().lower().rstrip(".")
 
-        if subdomain not in assets:
-            assets[subdomain] = Asset(
-                hostname=subdomain,
-                certificate_sources=[
-                    "certificate_transparency"
-                ],
+        if not is_in_scope(hostname, domain):
+            continue
+
+        if hostname not in assets and len(assets) < MAX_ASSETS:
+            assets[hostname] = Asset(
+                hostname=hostname,
+                certificate_sources=["certificate_transparency"],
             )
 
-    # -------------------------
-    # HTTP discovery
-    # -------------------------
+        if len(assets) >= MAX_ASSETS:
+            break
+
     if not passive_only:
         for asset in assets.values():
-            if not is_in_scope(
-                asset.hostname,
-                domain,
-            ):
+            if not is_in_scope(asset.hostname, domain):
                 continue
 
             http_results = check_http_service(asset.hostname)

@@ -2,3 +2,4 @@ dnspython
 httpx
 Flask
 pytest
+Flask-WTF
